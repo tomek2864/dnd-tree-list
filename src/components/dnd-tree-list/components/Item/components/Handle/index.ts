@@ -1,0 +1,1 @@
+export { HandleSSR } from './HandleSSR';

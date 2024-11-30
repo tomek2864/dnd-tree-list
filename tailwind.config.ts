@@ -9,24 +9,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        backgroundPrimary: "var(--bg-primary)",
-        backgroundSecondary: "var(--bg-secondary)",
-        borderPrimary: "var(--border-primary)",
-        borderSecondary: "var(--border-secondary)",
-        textPrimary: "var(--text-primary)",
-        textSecondary: "var(--text-secondary)",
-        textTertiary: "var(--text-tertiary)",
-        cancel: {
-          text: "var(--cancel-text)",
-          border: "var(--cancel-border)",
-        },
-        add: {
-          text: "var(--add-text)",
-          border: "var(--add-border)",
-        },
+        primary: "var(--bg-primary)",
+        secondary: "var(--bg-secondary)",
+        cancel: "var(--bg-cancel)",
+        add: "var(--bg-add)",
+      },
+      textColor: {
+        primary: "var(--text-primary)",
+        secondary: "var(--text-secondary)",
+        cancel: "var(--cancel-text)",
+        add: "var(--add-text)",
+      },
+      borderColor: {
+        primary: "var(--border-primary)",
+        secondary: "var(--border-secondary)",
+        cancel: "var(--cancel-border)",
+        add: "var(--add-border)",
+      },
+      backgroundColor: {
+        primary: "var(--bg-primary)",
+        secondary: "var(--bg-secondary)",
+        cancel: "var(--bg-cancel)",
+        add: "var(--bg-add)",
       },
       boxShadow: {
         subtle: "0px 1px 2px 0px #1018280D",
+      },
+      borderRadius: {
+        md: "8px",
       },
       fontSize: {
         '14-400': ['14px', { fontWeight: '400' }],
@@ -39,6 +49,9 @@ export default {
       lineHeight: {
         '20': '20px',
         '24': '24px',
+      },
+      spacing: {
+        'custom': 'var(--spacing)',
       },
     },
   },

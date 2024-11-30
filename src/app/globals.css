@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --bg-primary: #fff;
   --bg-secondary: #f9fafb;
@@ -13,7 +17,7 @@
   --add-border: #d6bbfb;
 
   --foreground: var(--text-primary);
-  --background: var(--bg-primary);
+  --background: var(--bg-secondary);
 }
 
 /* @media (prefers-color-scheme: dark) {

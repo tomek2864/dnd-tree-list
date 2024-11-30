@@ -1,26 +1,11 @@
-import Image from "next/image";
+import { SortableTree as SortableDndTree } from "@/components/dnd-tree-list/SortableTree";
 
 export default function Home() {
   return (
-    <div>
-      <p className="text-sm font-normal">14px 400</p>
-      <p className="text-sm font-medium">14px 500</p>
-      <p className="text-sm font-semibold">14px 600</p>
-      <p className="text-base font-normal">16px 400</p>
-      <p className="text-base font-normal">16px 500</p>
-      <p className="text-base font-normal">16px 600</p>
-      <p className="text-base font-normal leading-5">16px 600 l-height 20px</p>
-      <p className="text-base font-normal leading-6">16px 600 l-height 24px</p>
-
-      <p className="text-14-400">14px 400</p>
-      <p className="text-16-600 leading-24">16px 600 l-height 24px</p>
-      <Image
-        aria-hidden
-        src="/icons/ic_move-all-directions.svg"
-        alt="ic_move-all-directions icon"
-        width={16}
-        height={16}
-      />
-    </div>
+    <main className="max-w-[1208px] px-4 py-6 mx-auto">
+      <div className="rounded-md overflow-hidden border border-secondary shadow-subtle">
+        <SortableDndTree removable />
+      </div>
+    </main>
   );
 }

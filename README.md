@@ -19,7 +19,7 @@ First, install the dependencies:
 npm install
 ```
 
-If you encounter issues installing @dnd-kit/core, add the --legacy-peer-deps flag:
+If you encounter issues installing packages, add the --legacy-peer-deps flag:
 
 ```bash
 npm install --legacy-peer-deps
