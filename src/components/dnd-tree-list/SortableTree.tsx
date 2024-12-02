@@ -25,44 +25,24 @@ import {
   getProjection,
   removeItem,
   removeChildrenOf,
+  toggleAddChildForm,
+  toggleEditForm,
+  editTreeItem,
+  addChildTreeItem,
+  addRootTreeItem,
 } from "./utilities";
-import type { FlattenedItem, SensorContext, TreeItems } from "./types";
+import type {
+  BasicItem,
+  FlattenedItem,
+  SensorContext,
+  TreeItem,
+  TreeItems,
+} from "./types";
 import { SortableTreeItem } from "./components";
+import { EmptyStateFormSSR } from "./components/Forms/EmptyStateFormSSR";
+import { RootFormSSR } from "./components/Forms";
 
-const initialItems: TreeItems = [
-  {
-    id: "Home",
-    children: [],
-  },
-  {
-    id: "Collections",
-    children: [
-      { id: "Spring", children: [] },
-      {
-        id: "Summer",
-        children: [
-          {
-            id: "About Us 1",
-            children: [],
-          },
-        ],
-      },
-      { id: "Fall", children: [] },
-      { id: "Winter", children: [] },
-    ],
-  },
-  {
-    id: "About Us",
-    children: [],
-  },
-  {
-    id: "My Account",
-    children: [
-      { id: "Addresses", children: [] },
-      { id: "Order History", children: [] },
-    ],
-  },
-];
+const initialItems: TreeItems = [];
 
 const measuring = {
   droppable: {
@@ -72,36 +52,25 @@ const measuring = {
 
 interface Props {
   defaultItems?: TreeItems;
-  removable?: boolean;
 }
 
-export function SortableTree({
-  defaultItems = initialItems,
-  removable,
-}: Props) {
+export function SortableTree({ defaultItems = initialItems }: Props) {
   const [items, setItems] = useState(() => defaultItems);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
+  const [isVisibleInitTreeItemForm, showInitTreeItemForm] = useState(false);
 
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items);
-    const collapsedItems = flattenedTree.reduce<string[]>(
-      (acc, { children, collapsed, id }) =>
-        collapsed && children.length ? [...acc, id.toString()] : acc,
-      []
-    );
 
     const result = flattenedTree.map((item, index) => {
       const nextDepth = flattenedTree[index + 1]?.depth ?? null;
-      const updatedItem = { ...item, nextDepth };
-      return updatedItem;
+
+      return { ...item, nextDepth };
     });
 
-    return removeChildrenOf(
-      result,
-      activeId != null ? [activeId, ...collapsedItems] : collapsedItems
-    );
+    return removeChildrenOf(result, activeId != null ? [activeId] : []);
   }, [activeId, items]);
 
   const projected =
@@ -129,30 +98,94 @@ export function SortableTree({
   }, [flattenedItems, offsetLeft]);
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      measuring={measuring}
-      onDragStart={handleDragStart}
-      onDragMove={handleDragMove}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
-    >
-      <SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
-        {flattenedItems.map(({ id, depth, nextDepth }) => (
-          <SortableTreeItem
-            key={id}
-            id={id}
-            value={String(id)}
-            depth={id === activeId && projected ? projected.depth : depth}
-            nextDepth={nextDepth ?? null}
-            indentationWidth={64}
-            onRemove={removable ? () => handleRemove(id) : undefined}
-          />
-        ))}
-      </SortableContext>
-    </DndContext>
+    <div className="flex flex-col gap-y-8">
+      {flattenedItems.length === 0 && (
+        <EmptyStateFormSSR
+          isFormVisible={
+            flattenedItems.length === 0 && isVisibleInitTreeItemForm
+          }
+          onShowForm={(show) => showInitTreeItemForm(show)}
+          onSaveForm={(data) => {
+            handleAddRootTreeItem(data);
+            showInitTreeItemForm(false);
+          }}
+        />
+      )}
+      {flattenedItems.length > 0 && (
+        <div className="rounded-md overflow-hidden border border-primary shadow-subtle bg-secondary">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            measuring={measuring}
+            onDragStart={handleDragStart}
+            onDragMove={handleDragMove}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
+            <SortableContext
+              items={sortedIds}
+              strategy={verticalListSortingStrategy}
+            >
+              {flattenedItems.map(
+                ({
+                  id,
+                  name,
+                  url,
+                  depth,
+                  nextDepth,
+                  isAddChildFormVisible,
+                  isEditFormVisible,
+                }) => (
+                  <SortableTreeItem
+                    key={id}
+                    id={id}
+                    value={String(id)}
+                    name={name}
+                    url={url ?? null}
+                    depth={
+                      id === activeId && projected ? projected.depth : depth
+                    }
+                    nextDepth={nextDepth ?? null}
+                    indentationWidth={64}
+                    isAddChildFormVisible={isAddChildFormVisible}
+                    isEditFormVisible={isEditFormVisible}
+                    onRemove={() => handleRemove(id)}
+                    onStartEdit={() => {
+                      handleToggleEditForm(id, true);
+                      handleToggleAddChildForm(id, false);
+                    }}
+                    onSaveEdit={(data) => {
+                      handleEditTreeItem(id, data);
+                      handleToggleEditForm(id, false);
+                    }}
+                    onCancelEdit={() => handleToggleEditForm(id, false)}
+                    onStartAdd={() => {
+                      handleToggleAddChildForm(id, true);
+                      handleToggleEditForm(id, false);
+                    }}
+                    onSaveAdd={(data) => {
+                      handleAddChildTreeItem(id, data);
+                      handleToggleAddChildForm(id, false);
+                    }}
+                    onCancelAdd={() => handleToggleAddChildForm(id, false)}
+                  />
+                )
+              )}
+              <RootFormSSR
+                isShowFormButtonVisible={flattenedItems.length > 0}
+                isFormVisible={isVisibleInitTreeItemForm}
+                onShowForm={(show) => showInitTreeItemForm(show)}
+                onSaveForm={(data) => {
+                  handleAddRootTreeItem(data);
+                  showInitTreeItemForm(false);
+                }}
+              />
+            </SortableContext>
+          </DndContext>
+        </div>
+      )}
+    </div>
   );
 
   function handleDragStart({ active: { id: activeId } }: DragStartEvent) {
@@ -205,5 +238,33 @@ export function SortableTree({
 
   function handleRemove(id: UniqueIdentifier) {
     setItems((items) => removeItem(items, id));
+  }
+
+  function handleToggleAddChildForm(id: UniqueIdentifier, isVisible: boolean) {
+    setItems((items) => toggleAddChildForm(items, id, isVisible));
+  }
+
+  function handleToggleEditForm(id: UniqueIdentifier, isVisible: boolean) {
+    setItems((items) => toggleEditForm(items, id, isVisible));
+  }
+
+  function handleEditTreeItem(
+    id: UniqueIdentifier,
+    updatedData: Partial<TreeItem>
+  ) {
+    setItems((items) => editTreeItem(items, id, updatedData));
+  }
+
+  function handleAddChildTreeItem(
+    parentId: UniqueIdentifier,
+    newItemData: BasicItem & { newItemId: UniqueIdentifier }
+  ) {
+    setItems((items) => addChildTreeItem(items, parentId, newItemData));
+  }
+
+  function handleAddRootTreeItem(
+    newItemData: BasicItem & { newItemId: UniqueIdentifier }
+  ) {
+    setItems((items) => addRootTreeItem(items, newItemData));
   }
 }

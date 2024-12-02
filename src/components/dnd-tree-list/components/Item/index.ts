@@ -1,2 +1,2 @@
 export { Item } from './Item';
-export { ActionSSR, HandleSSR, RemoveSSR } from './components';
+export { ActionSSR, HandleSSR, ControlPanelSSR, RemoveSSR } from './components';

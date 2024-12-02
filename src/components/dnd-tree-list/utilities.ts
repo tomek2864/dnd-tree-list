@@ -1,7 +1,7 @@
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 
-import type { FlattenedItem, TreeItem, TreeItems } from './types';
+import type { BasicItem, FlattenedItem, TreeItem, TreeItems } from './types';
 
 export const iOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
@@ -94,16 +94,29 @@ export function flattenTree(items: TreeItems): FlattenedItem[] {
 }
 
 export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
-  const root: TreeItem = { id: 'root', children: [] };
+  const root: TreeItem = {
+    id: 'root',
+    name: '',
+    url: null,
+    children: [],
+    isAddChildFormVisible: false,
+    isEditFormVisible: false,
+  };
+
   const nodes: Record<string, TreeItem> = { [root.id]: root };
-  const items = flattenedItems.map((item) => ({ ...item, children: [] }));
+  const items = flattenedItems.map((item) => ({
+    ...item,
+    children: [],
+    isAddChildFormVisible: false,
+    isEditFormVisible: false,
+  }));
 
   for (const item of items) {
-    const { id, children } = item;
+    const { id, children, name, url } = item;
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? findItem(items, parentId);
 
-    nodes[id] = { id, children };
+    nodes[id] = { id, children, name, url, isAddChildFormVisible: false, isEditFormVisible: false };
     parent.children.push(item);
   }
 
@@ -192,3 +205,102 @@ export function removeChildrenOf(
     return true;
   });
 }
+
+export function addRootTreeItem(
+  tree: TreeItems,
+  newItemData: BasicItem & { newItemId: UniqueIdentifier }
+): TreeItems {
+  const newRootItem: TreeItem = {
+    id: newItemData.newItemId,
+    name: newItemData.name,
+    url: newItemData.url || null,
+    children: [],
+    isAddChildFormVisible: false,
+    isEditFormVisible: false,
+  };
+
+  return [...tree, newRootItem];
+}
+
+
+export function toggleAddChildForm(
+  tree: TreeItems,
+  id: UniqueIdentifier,
+  isVisible: boolean
+): TreeItems {
+  return tree.map((item) => {
+    if (item.id === id) {
+      return { ...item, isAddChildFormVisible: isVisible };
+    }
+
+    if (item.children.length > 0) {
+      return { ...item, children: toggleAddChildForm(item.children, id, isVisible) };
+    }
+
+    return item;
+  });
+}
+
+export function toggleEditForm(
+  tree: TreeItems,
+  id: UniqueIdentifier,
+  isVisible: boolean
+): TreeItems {
+  return tree.map((item) => {
+    if (item.id === id) {
+      return { ...item, isEditFormVisible: isVisible };
+    }
+
+    if (item.children.length > 0) {
+      return { ...item, children: toggleEditForm(item.children, id, isVisible) };
+    }
+
+    return item;
+  });
+}
+
+export function editTreeItem(
+  tree: TreeItems,
+  id: UniqueIdentifier,
+  updatedData: Partial<TreeItem>
+): TreeItems {
+  return tree.map((item) => {
+    if (item.id === id) {
+      return { ...item, ...updatedData };
+    }
+
+    if (item.children.length > 0) {
+      return { ...item, children: editTreeItem(item.children, id, updatedData) };
+    }
+
+    return item;
+  });
+}
+
+export function addChildTreeItem(
+  tree: TreeItems,
+  parentId: UniqueIdentifier,
+  newItemData: BasicItem & { newItemId: UniqueIdentifier }
+): TreeItems {
+  return tree.map((item) => {
+    if (item.id === parentId) {
+      const newChild: TreeItem = {
+        id: newItemData.newItemId,
+        name: newItemData.name,
+        url: newItemData.url || null,
+        children: [],
+        isAddChildFormVisible: false,
+        isEditFormVisible: false,
+      };
+      return { ...item, children: [...item.children, newChild] };
+    }
+
+    if (item.children.length > 0) {
+      return { ...item, children: addChildTreeItem(item.children, parentId, newItemData) };
+    }
+
+    return item;
+  });
+}
+
+
