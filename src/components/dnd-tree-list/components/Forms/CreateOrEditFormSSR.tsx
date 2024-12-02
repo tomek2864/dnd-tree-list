@@ -21,7 +21,7 @@ export const CreateOrEditFormSSR = ({
   return (
     <div
       className={clsxm(
-        "relative border border-primary bg-primary rounded-md pl-6 py-5 pr-20 mx-6 my-4",
+        "relative border border-primary bg-primary rounded-md pl-6 py-5 pr-20",
         className
       )}
     >
