@@ -10,6 +10,9 @@ The project utilizes the following technologies:
 - **[Tailwind CSS](https://tailwindcss.com/)**
 - **[TypeScript](https://www.typescriptlang.org/)**
 - **[@dnd-kit/core](https://dndkit.com/)** for drag-and-drop functionality
+- **[React Hook Form](https://react-hook-form.com/)** for managing form state and validations efficiently, ensuring optimal performance by minimizing re-renders
+- **[Yup](https://github.com/jquense/yup)** for schema-based form validation, providing a clean and declarative way to enforce data shape and constraints
+
 
 ## Getting Started
 
@@ -56,3 +59,4 @@ For further details about the technologies used in this project, explore the fol
 ## Deployment
 
 The application has been deployed on Vercel.
+ - https://dnd-tree-list.vercel.app
