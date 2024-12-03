@@ -7,6 +7,15 @@ export interface Props {
   onStartAdd(): void;
 }
 
+const getControlButtonClasses = (position: "left" | "middle" | "right") => {
+  return clsxm(
+    "flex items-center px-4 text-secondary font-semibold text-sm border bg-primary hover:text-primary focus:ring-2 focus:ring-cancel focus:outline-none",
+    position === "left" && "rounded-tl-md rounded-bl-md border-cancel",
+    position === "middle" && "border-t border-b border-cancel",
+    position === "right" && "rounded-tr-md rounded-br-md border-cancel"
+  );
+};
+
 export const ControlPanelSSR = ({
   onRemove,
   onStartEdit,
@@ -16,39 +25,21 @@ export const ControlPanelSSR = ({
     <div className="flex h-10">
       <FormButtonSSR
         type="button"
-        className={clsxm(
-          "flex items-center",
-          "border rounded-tl-md rounded-bl-md px-4 text-secondary font-semibold text-sm",
-          "border-cancel bg-primary",
-          "hover:text-primary",
-          "focus:ring-2 focus:ring-cancel focus:outline-none"
-        )}
+        className={getControlButtonClasses("left")}
         onClick={onRemove}
       >
         Usuń
       </FormButtonSSR>
       <FormButtonSSR
         type="button"
-        className={clsxm(
-          "flex items-center",
-          "border-t border-b px-4 text-secondary font-semibold text-sm",
-          "border-cancel bg-primaryl",
-          "hover:text-primary",
-          "focus:ring-2 focus:ring-cancel focus:outline-none"
-        )}
+        className={getControlButtonClasses("middle")}
         onClick={onStartEdit}
       >
         Edytuj
       </FormButtonSSR>
       <FormButtonSSR
         type="button"
-        className={clsxm(
-          "flex items-center",
-          "border rounded-tr-md rounded-br-md px-4 text-secondary font-semibold text-sm",
-          "border-cancel bg-primary",
-          "hover:text-primary",
-          "focus:ring-2 focus:ring-cancel focus:outline-none"
-        )}
+        className={getControlButtonClasses("right")}
         onClick={onStartAdd}
       >
         Dodaj pozycję menu

@@ -1,10 +1,8 @@
 import React, { forwardRef, HTMLAttributes } from "react";
-
 import clsxm from "@/utils/clsxm";
 import { UniqueIdentifier } from "@dnd-kit/core";
-
 import { BasicItem } from "../../types";
-import { TreeItemForm } from "../Forms";
+import { CreateOrEditFormSSR } from "../Forms";
 import { ControlPanelSSR, HandleSSR } from "../Item";
 
 export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, "id"> {
@@ -13,8 +11,7 @@ export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, "id"> {
   disableInteraction?: boolean;
   disableSelection?: boolean;
   ghost?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handleProps?: any;
+  handleProps?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   indicator?: boolean;
   indentationWidth: number;
   value: string;
@@ -22,13 +19,13 @@ export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, "id"> {
   url: string | null;
   isAddChildFormVisible: boolean;
   isEditFormVisible: boolean;
-  onRemove(): void; // Triggered when the "Remove" action is triggered
-  onStartEdit(): void; // Opens the form in edit mode
-  onSaveEdit(data: BasicItem): void; // Saves changes after editing
-  onCancelEdit(): void; // Cancels the edit operation and closes the form
-  onStartAdd(): void; // Opens the form to add a new item
-  onSaveAdd(data: BasicItem & { newItemId: UniqueIdentifier }): void; // Saves the new item after filling out the form
-  onCancelAdd(): void; // Cancels adding a new item and closes the form
+  onRemove(): void;
+  onStartEdit(): void;
+  onSaveEdit(data: BasicItem): void;
+  onCancelEdit(): void;
+  onStartAdd(): void;
+  onSaveAdd(data: BasicItem & { newItemId: UniqueIdentifier }): void;
+  onCancelAdd(): void;
   wrapperRef?(node: HTMLLIElement): void;
 }
 
@@ -119,16 +116,12 @@ export const TreeItemSSR = forwardRef<HTMLDivElement, Props>(
               "ml-[var(--spacing-child-add)]" // spacing-child because its adding a child
             )}
           >
-            <div className="border border-primary bg-primary rounded-md pl-6 py-5 pr-20 w-full">
-              <TreeItemForm
-                initData={{
-                  name: "",
-                  url: null,
-                }}
-                onSave={onSaveAdd}
-                onCancel={onCancelAdd}
-              />
-            </div>
+            <CreateOrEditFormSSR
+              className="w-full"
+              onShow={onCancelAdd}
+              onSave={onSaveAdd}
+              onCancel={onCancelAdd}
+            />
           </div>
         )}
         {isEditFormVisible && (
@@ -138,16 +131,12 @@ export const TreeItemSSR = forwardRef<HTMLDivElement, Props>(
               depth > 0 && "ml-[var(--spacing-child-edit)]"
             )}
           >
-            <div className="border border-primary bg-primary rounded-md pl-6 py-5 pr-20 w-full">
-              <TreeItemForm
-                initData={{
-                  name: name,
-                  url: url,
-                }}
-                onSave={onSaveEdit}
-                onCancel={onCancelEdit}
-              />
-            </div>
+            <CreateOrEditFormSSR
+              className="w-full"
+              onShow={onCancelEdit}
+              onSave={onSaveEdit}
+              onCancel={onCancelEdit}
+            />
           </div>
         )}
       </li>
