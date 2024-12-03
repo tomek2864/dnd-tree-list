@@ -8,7 +8,7 @@ export const config = {
 
 export function middleware(request: NextRequest) {
     const { os } = userAgent(request);
-    const isIOS = os.name === 'ios';
+    const isIOS = os.name?.toLowerCase() === 'ios';
 
     if (!isIOS) {
         return NextResponse.next();

@@ -133,6 +133,10 @@ export const TreeItemSSR = forwardRef<HTMLDivElement, Props>(
           >
             <CreateOrEditFormSSR
               className="w-full"
+              initData={{
+                name: name,
+                url: url,
+              }}
               onShow={onCancelEdit}
               onSave={onSaveEdit}
               onCancel={onCancelEdit}

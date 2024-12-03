@@ -7,6 +7,7 @@ import { TreeItemForm } from "./TreeItemForm";
 
 type CreateOrEditFormSSRProps = {
   className?: string;
+  initData?: BasicItem;
   onShow(): void;
   onSave(data: BasicItem & { newItemId: UniqueIdentifier }): void;
   onCancel(): void;
@@ -14,6 +15,7 @@ type CreateOrEditFormSSRProps = {
 
 export const CreateOrEditFormSSR = ({
   className = "",
+  initData,
   onShow,
   onSave,
   onCancel,
@@ -38,7 +40,7 @@ export const CreateOrEditFormSSR = ({
           height={16}
         />
       </FormButtonSSR>
-      <TreeItemForm onSave={onSave} onCancel={onCancel} />
+      <TreeItemForm onSave={onSave} onCancel={onCancel} initData={initData} />
     </div>
   );
 };
