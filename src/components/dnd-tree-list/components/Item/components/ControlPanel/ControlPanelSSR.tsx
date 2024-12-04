@@ -11,7 +11,7 @@ const getControlButtonClasses = (position: "left" | "middle" | "right") => {
   return clsxm(
     "flex items-center px-4 text-secondary font-semibold text-sm border bg-primary hover:text-primary focus:ring-2 focus:ring-cancel focus:outline-none",
     position === "left" && "rounded-tl-md rounded-bl-md border-cancel",
-    position === "middle" && "border-t border-b border-cancel",
+    position === "middle" && "border-x-0 border-y border-cancel",
     position === "right" && "rounded-tr-md rounded-br-md border-cancel"
   );
 };
@@ -22,7 +22,7 @@ export const ControlPanelSSR = ({
   onStartAdd,
 }: Props) => {
   return (
-    <div className="flex h-10">
+    <div className="hidden h-10 md:flex">
       <FormButtonSSR
         type="button"
         className={getControlButtonClasses("left")}
