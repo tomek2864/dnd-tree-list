@@ -22,7 +22,7 @@ export const RootFormSSR = ({
     <>
       {isFormVisible && isShowFormButtonVisible && (
         <CreateOrEditFormSSR
-          className="mx-5 my-6"
+          className="mx-5 my-6 border-t border-secondary"
           onShow={() => onShowForm(false)}
           onSave={onSaveForm}
           onCancel={() => onShowForm(false)}
